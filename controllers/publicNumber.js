@@ -22,7 +22,8 @@ module.exports.savePublicNumber = async (ctx, next) => {
       type,
       updateRouter,
       userId,
-      remark
+      remark,
+      phone
     } = ctx.request.body
     if (operation === 'add') {
       let res = []
@@ -47,6 +48,7 @@ module.exports.savePublicNumber = async (ctx, next) => {
           updaterouter: updateRouter,
           userid: userId,
           updatetime: updateTime,
+          phone,
           type,
           brush,
           remark
@@ -65,6 +67,7 @@ module.exports.savePublicNumber = async (ctx, next) => {
         womenratio: womenRatio,
         updaterouter: updateRouter,
         userid: userId,
+        phone,
         brush,
         type,
         remark
@@ -112,7 +115,7 @@ module.exports.getPublicNumber = async (ctx, next) => {
     if (tag) {
       res = await mysql('cPublicNumber').limit(pageSize).offset((pageIndex - 1) * pageSize)
         .where(searchData)
-        .where(function() {
+        .where(function () {
           if (publicNumber) {
             this.where('name', 'like', `%${publicNumber}%`).orWhere('dataId', '=', publicNumber)
           }
@@ -134,7 +137,7 @@ module.exports.getPublicNumber = async (ctx, next) => {
           if (womenRatioE) {
             this.where('womenRatio', '<', womenRatioE)
           }
-          if (priceS){
+          if (priceS) {
             this.where('topCost', '>', Number(priceS))
           }
           if (priceE) {
@@ -147,8 +150,8 @@ module.exports.getPublicNumber = async (ctx, next) => {
             if (tag === 'self') {
               this.where('userid', '=', userId)
             } else if (tag === 'dept') {
-              this.whereIn('userid', function() {
-                this.select('id').from('cUser').whereIn('dept', function() {
+              this.whereIn('userid', function () {
+                this.select('id').from('cUser').whereIn('dept', function () {
                   this.select('dept').from('cUser').where({
                     id: userId
                   })
@@ -158,6 +161,20 @@ module.exports.getPublicNumber = async (ctx, next) => {
           }
         }).orderBy(searchOrder, 'desc')
     }
+
+    let author = await mysql('cAuthor').where({ user: userId })
+    author = author[0]
+    console.log('author.master', author[0]);
+
+    if (author.author !== 'master') {
+      res.forEach(item => {
+        if (item.userid !== userId) {
+          item.phone = ''
+        }
+        return item
+      })
+    }
+
     ctx.state.data = res
 
   } catch (error) {
@@ -193,7 +210,7 @@ module.exports.getPublicNumberCount = async (ctx, next) => {
     if (tag) {
       res = await mysql('cPublicNumber').count('id as count')
         .where(searchData)
-        .where(function() {
+        .where(function () {
           if (publicNumber) {
             this.where('name', 'like', `%${publicNumber}%`)
           }
@@ -215,7 +232,7 @@ module.exports.getPublicNumberCount = async (ctx, next) => {
           if (womenRatioE) {
             this.where('womenRatio', '<', womenRatioE)
           }
-          if (priceS){
+          if (priceS) {
             this.where('topCost', '>', Number(priceS))
           }
           if (priceE) {
@@ -225,8 +242,8 @@ module.exports.getPublicNumberCount = async (ctx, next) => {
             if (tag === 'self') {
               this.where('userid', '=', userId)
             } else if (tag === 'dept') {
-              this.whereIn('userid', function() {
-                this.select('id').from('cUser').whereIn('dept', function() {
+              this.whereIn('userid', function () {
+                this.select('id').from('cUser').whereIn('dept', function () {
                   this.select('dept').from('cUser').where({
                     id: userId
                   })
@@ -317,7 +334,8 @@ module.exports.updatePublicNumber = async (ctx, next) => {
       brush,
       type,
       updateRouter,
-      remark
+      remark,
+      phone
     } = ctx.request.body
     const res = await mysql('cPublicNumber').where({
       id
@@ -343,7 +361,8 @@ module.exports.updatePublicNumber = async (ctx, next) => {
         updateRouter: updateRouter,
         remark,
         brush,
-        type
+        type,
+        phone
       }
       if (updateTime) {
         updateObj.updateTime = updateTime
@@ -356,6 +375,7 @@ module.exports.updatePublicNumber = async (ctx, next) => {
     ctx.state.data = {
       tip: '修改成功'
     }
+    console.log('phone', phone);
   } catch (error) {
     throw new Error(error)
   }
