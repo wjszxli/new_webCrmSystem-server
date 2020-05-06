@@ -163,10 +163,12 @@ module.exports.getPublicNumber = async (ctx, next) => {
     }
 
     let author = await mysql('cAuthor').where({ user: userId })
-    author = author[0]
-    console.log('author.master', author[0]);
+    let authorUser = ''
+    if (author.length) {
+      authorUser = author[0].author
+    }
 
-    if (author.author !== 'master') {
+    if (authorUser !== 'master') {
       res.forEach(item => {
         if (item.userid !== userId) {
           item.phone = ''
