@@ -162,20 +162,20 @@ module.exports.getPublicNumber = async (ctx, next) => {
         }).orderBy(searchOrder, 'desc')
     }
 
-    let author = await mysql('cAuthor').where({ user: userId })
-    let authorUser = ''
-    if (author.length) {
-      authorUser = author[0].author
-    }
+    // let author = await mysql('cAuthor').where({ user: userId })
+    // let authorUser = ''
+    // if (author.length) {
+    //   authorUser = author[0].author
+    // }
 
-    if (authorUser !== 'master') {
-      res.forEach(item => {
-        if (item.userid !== userId) {
-          item.phone = ''
-        }
-        return item
-      })
-    }
+    // if (authorUser !== 'master') {
+    //   res.forEach(item => {
+    //     if (item.userid !== userId) {
+    //       item.phone = ''
+    //     }
+    //     return item
+    //   })
+    // }
 
     ctx.state.data = res
 
