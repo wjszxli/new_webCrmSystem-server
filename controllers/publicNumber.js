@@ -170,7 +170,7 @@ module.exports.getPublicNumber = async (ctx, next) => {
 
     if (authorUser !== 'master') {
       res.forEach(item => {
-        if (item.userid !== userId) {
+        if (item.userId !== userId) {
           item.phone = ''
         }
         return item
