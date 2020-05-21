@@ -53,28 +53,28 @@ module.exports.savePublicNumber = async (ctx, next) => {
           brush,
           remark
         })
+        return
       }
-    } else if (operation === 'update') {
-      await mysql('cPublicNumber').update({
-        name,
-        star,
-        toptitle: topTitle,
-        topcost: topCost,
-        secondtitle: secondTitle,
-        secondcost: secondCost,
-        lasttitle: lastTitle,
-        lastcost: lastCost,
-        womenratio: womenRatio,
-        updaterouter: updateRouter,
-        userid: userId,
-        phone,
-        brush,
-        type,
-        remark
-      }).where({
-        dataid: dataId
-      })
     }
+    await mysql('cPublicNumber').update({
+      name,
+      star,
+      toptitle: topTitle,
+      topcost: topCost,
+      secondtitle: secondTitle,
+      secondcost: secondCost,
+      lasttitle: lastTitle,
+      lastcost: lastCost,
+      womenratio: womenRatio,
+      updaterouter: updateRouter,
+      userid: userId,
+      phone,
+      brush,
+      type,
+      remark
+    }).where({
+      dataid: dataId
+    })
     ctx.state.data = {
       tip: '保存成功'
     }
