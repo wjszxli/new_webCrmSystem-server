@@ -280,6 +280,29 @@ module.exports.deletePublicNumber = async (ctx, next) => {
   }
 }
 
+module.exports.deletePublicNumberMore = async (ctx, next) => {
+  try {
+    isLogin(ctx, next)
+    const {
+      ids
+    } = ctx.request.query
+    const idArr = ids.split(',')
+    idArr.forEach(async item => {
+      await mysql('cPublicNumber').where({
+        id: item
+      }).del()
+    })
+
+    const tip = '删除成功'
+    ctx.state.data = {
+      tip
+    }
+  } catch (error) {
+    console.log('error', error)
+    throw new Error(error)
+  }
+}
+
 module.exports.getOnePublicNumber = async (ctx, next) => {
   try {
     isLogin(ctx, next)
