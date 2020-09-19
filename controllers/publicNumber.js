@@ -32,6 +32,11 @@ module.exports.savePublicNumber = async (ctx, next) => {
           dataid: dataId
         })
       }
+      if (name) {
+        res = await mysql('cPublicNumber').where({
+          name: name
+        })
+      }
       const updateTime = new Date()
       if (res.length === 0 || !dataId) {
         await mysql('cPublicNumber').insert({
@@ -53,28 +58,27 @@ module.exports.savePublicNumber = async (ctx, next) => {
           brush,
           remark
         })
-        return
       }
     }
-    await mysql('cPublicNumber').update({
-      name,
-      star,
-      toptitle: topTitle,
-      topcost: topCost,
-      secondtitle: secondTitle,
-      secondcost: secondCost,
-      lasttitle: lastTitle,
-      lastcost: lastCost,
-      womenratio: womenRatio,
-      updaterouter: updateRouter,
-      userid: userId,
-      phone,
-      brush,
-      type,
-      remark
-    }).where({
-      dataid: dataId
-    })
+    // await mysql('cPublicNumber').update({
+    //   name,
+    //   star,
+    //   toptitle: topTitle,
+    //   topcost: topCost,
+    //   secondtitle: secondTitle,
+    //   secondcost: secondCost,
+    //   lasttitle: lastTitle,
+    //   lastcost: lastCost,
+    //   womenratio: womenRatio,
+    //   updaterouter: updateRouter,
+    //   userid: userId,
+    //   phone,
+    //   brush,
+    //   type,
+    //   remark
+    // }).where({
+    //   dataid: dataId
+    // })
     ctx.state.data = {
       tip: '保存成功'
     }
@@ -366,11 +370,11 @@ module.exports.updatePublicNumber = async (ctx, next) => {
       id
     })
     let updateTime = ''
-    if (res) {
-      if (res[0].topCost !== topCost || res[0].secondCost !== secondCost || res[0].lastCost !== lastCost) {
-        updateTime = new Date()
-      }
-    }
+    // if (res) {
+    //   if (res[0].topCost !== topCost || res[0].secondCost !== secondCost || res[0].lastCost !== lastCost) {
+    //     updateTime = new Date()
+    //   }
+    // }
     if (id) {
       const updateObj = {
         name,
@@ -423,6 +427,33 @@ module.exports.updateImg = async (ctx, next) => {
     }
     ctx.state.data = {
       tip: '修改成功'
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+module.exports.change = async (ctx, next) => {
+  try {
+    const { fromId, toId } = ctx.request.body
+
+    const toData = await mysql('cUser').where('id', toId).select()
+
+    if (toData.length) {
+      const toUserName = toData[0].name
+
+      await mysql('cPublicNumber')
+        .update({
+          userId: toId,
+          updateRouter: toUserName
+        })
+        .where({
+          userId: fromId
+        })
+    }
+
+    ctx.state.data = {
+      tip: '数据转移成功'
     }
   } catch (error) {
     throw new Error(error)

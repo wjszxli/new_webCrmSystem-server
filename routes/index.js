@@ -106,6 +106,8 @@ router.post('/deletePublicNumber', controllers.publicNumber.deletePublicNumber)
 router.post('/deletePublicNumberMore', controllers.publicNumber.deletePublicNumberMore)
 
 router.post('/updateImg', controllers.publicNumber.updateImg)
+
+router.post('/change', controllers.publicNumber.change)
 // 处理404
 // router.post('*', controllers.error.notFind)
 // router.get('*', controllers.error.notFind)
