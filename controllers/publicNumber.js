@@ -436,24 +436,57 @@ module.exports.updateImg = async (ctx, next) => {
 module.exports.change = async (ctx, next) => {
   try {
     const { fromId, toId } = ctx.request.body
+    if (toId && fromId) {
+      const toUser = await mysql('cUser').where({ id: toId })
+      const fromUser = await mysql('cUser').where({ id: fromId })
 
-    const toData = await mysql('cUser').where('id', toId).select()
-
-    if (toData.length) {
-      const toUserName = toData[0].name
-
-      await mysql('cPublicNumber')
-        .update({
-          userId: toId,
-          updateRouter: toUserName
+      let res = await mysql('cPublicNumber').where({ userId: fromId })
+      if (res.length) {
+        res.forEach(async item => {
+          const updateObj = { userId: toId, updateRouter: toUser[0].name }
+          await mysql('cPublicNumber').update(updateObj).where({
+            id: item.id
+          })
         })
-        .where({
-          userId: fromId
-        })
-    }
+      }
 
-    ctx.state.data = {
-      tip: '数据转移成功'
+      res = await mysql('cPublicNumber').where({ updateRouter: fromUser[0].name })
+      if (res.length) {
+        res.forEach(async item => {
+          const updateObj = { updateRouter: toUser[0].name }
+          await mysql('cPublicNumber').update(updateObj).where({
+            id: item.id
+          })
+        })
+      }
+
+      res = await mysql('cCustomer').where({ userId: fromId })
+      if (res.length) {
+        res.forEach(async item => {
+          const updateObj = { userId: toId }
+          await mysql('cCustomer').update(updateObj).where({
+            id: item.id
+          })
+        })
+      }
+
+      res = await mysql('cPlan').where({ userId: fromId })
+      if (res.length) {
+        res.forEach(async item => {
+          const updateObj = { userId: toId }
+          await mysql('cPlan').update(updateObj).where({
+            id: item.id
+          })
+        })
+      }
+
+      ctx.state.data = {
+        tip: '迁移成功'
+      }
+    } else {
+      ctx.state.data = {
+        tip: '数据有误，迁移失败'
+      }
     }
   } catch (error) {
     throw new Error(error)

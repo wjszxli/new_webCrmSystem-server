@@ -209,7 +209,7 @@ module.exports.getPlanAllSum = async (ctx, next) => {
     backTimeEndTime
   } = ctx.request.query
 
-  const searchData = {}
+  const searchData = { isDelete: 0 }
 
   if (isDelete) {
     searchData.isDelete = isDelete
@@ -287,12 +287,12 @@ module.exports.getPlanAllSum = async (ctx, next) => {
           }
         }
       })
-      // Math.floor(15.7784514000 * 100) / 100
-    const price = Math.floor(res[0]['sum(`price`)'] * 100)/100
-    const cost = Math.floor(res[0]['sum(`cost`)'] * 100)/100
-    const impost = Math.floor(res[0]['sum(`impost`)'] * 100)/100
-    const channelImpost = Math.floor(res[0]['sum(`channelImpost`)'] * 100)/100
-    const rebate = Math.floor(res[0]['sum(`rebate`)'] * 100)/100
+    // Math.floor(15.7784514000 * 100) / 100
+    const price = Math.floor(res[0]['sum(`price`)'] * 100) / 100
+    const cost = Math.floor(res[0]['sum(`cost`)'] * 100) / 100
+    const impost = Math.floor(res[0]['sum(`impost`)'] * 100) / 100
+    const channelImpost = Math.floor(res[0]['sum(`channelImpost`)'] * 100) / 100
+    const rebate = Math.floor(res[0]['sum(`rebate`)'] * 100) / 100
     const profit = Math.floor(math.chain(price).subtract(cost).subtract(impost).add(channelImpost).subtract(rebate).value * 100) / 100
     ctx.state.data = {
       price,
