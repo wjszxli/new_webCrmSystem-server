@@ -168,7 +168,11 @@ module.exports.getPublicNumber = async (ctx, next) => {
 
     const author = await mysql('cAuthor').where({ user: userId, author: 'master' })
     if (!author.length) {
-      item.phone = ''
+      res.forEach(item => {
+        if (item.userId !== userId) {
+          item.phone = ''
+        }
+      })
     }
 
     ctx.state.data = res
